@@ -37,19 +37,19 @@ if hmm == "YCOMBINATOR\n":
 def msg_auto(event=None, context=None):
 
     # get your sid and auth token from twilio
-    twilio_sid = 'AC84fe5628e43a547fe53fd1349dbff74e'
-    auth_token = '6763d5cd72d0eb0238d7ac220e4f6dde'
+    twilio_sid = '{your-sid}'
+    auth_token = '{your-auth-token}'
 
     whatsapp_client = Client(twilio_sid, auth_token)
 
     # keep adding contacts to this dict to send
     # them the message
-    contact_directory = {'Gunas':'+919901688282'}
+    contact_directory = {'Gunas':'{#phno}'}
 
     for key, value in contact_directory.items():
         msg_loved_ones = whatsapp_client.messages.create(
                 body = hmm,
-                from_= 'whatsapp:+14155238886',
+                from_= "whatsapp:{#twilo's-trial}",
                 to='whatsapp:' + value,
             )
 
