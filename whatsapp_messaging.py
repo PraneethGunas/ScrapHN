@@ -3,12 +3,15 @@ from twilio.rest import Client
 from bs4 import BeautifulSoup
 import requests
 
+import redis
+r = redis.Redis(host = 'localhost', port = 6379)
+
 res = requests.get("https://news.ycombinator.com/")
 
 soup = BeautifulSoup(res.content, "lxml")
-# print (soup.prettify())
-keyWords = ["python","google","whatsapp","project"]
-hmm = "HNHNHNHNHNHNHNHNHNHN\n"
+
+hmm = "YCOMBINATOR\n"
+
 scoreData = soup.find_all("span",{"class": "score"})
 
 for d in scoreData:
@@ -19,13 +22,19 @@ for d in scoreData:
     score = d.text
     i = score.find(" ")
     if int(score[:i]) > 200:
-        
-        hmm+=(link.text+"\n"+score)
-        a = link.find("a",{"class","storylink"})
-        hmm+=("\n"+a['href']+"\n")
+        if r.get(d['id']) == None:
+            r.set(d["id"], int(score[:i]), px = 4000000*24)
+            hmm+=(link.text+"\n"+score)
+            a = link.find("a",{"class","storylink"})
+            hmm+=("\n"+a['href']+"\n")
+        else:
+            # print(r.get(d['id']))
+            continue
+if hmm == "YCOMBINATOR\n":
+    hmm = "Nothing new yet!"
 
 
-def msg_mom_and_dad(event=None, context=None):
+def msg_auto(event=None, context=None):
 
     # get your sid and auth token from twilio
     twilio_sid = 'AC84fe5628e43a547fe53fd1349dbff74e'
@@ -47,4 +56,4 @@ def msg_mom_and_dad(event=None, context=None):
         if(msg_loved_ones.sid):
             print("Success!")
 
-msg_mom_and_dad();
+msg_auto();
